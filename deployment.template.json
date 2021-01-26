@@ -1,0 +1,129 @@
+{
+  "$schema-template": "2.0.0",
+  "modulesContent": {
+    "$edgeAgent": {
+      "properties.desired": {
+        "schemaVersion": "1.0",
+        "runtime": {
+          "type": "docker",
+          "settings": {
+            "minDockerVersion": "v1.25",
+            "loggingOptions": "",
+            "registryCredentials": {
+              "iceedgecontainerregistry": {
+                "username": "$CONTAINER_REGISTRY_USERNAME_iceedgecontainerregistry",
+                "password": "$CONTAINER_REGISTRY_PASSWORD_iceedgecontainerregistry",
+                "address": "iceedgecontainerregistry.azurecr.io"
+              }
+            }
+          }
+        },
+        "systemModules": {
+          "edgeAgent": {
+            "type": "docker",
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.0",
+              "createOptions": {}
+            }
+          },
+          "edgeHub": {
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-hub:1.0",
+              "createOptions": {
+                "HostConfig": {
+                  "PortBindings": {
+                    "5671/tcp": [
+                      {
+                        "HostPort": "5671"
+                      }
+                    ],
+                    "8883/tcp": [
+                      {
+                        "HostPort": "8883"
+                      }
+                    ],
+                    "443/tcp": [
+                      {
+                        "HostPort": "443"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "modules": {
+          "BloodSugerSensor": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.BloodSugerSensor}",
+              "createOptions": {}
+            }
+          },
+          "BloodPressureSensor": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.BloodPressureSensor}",
+              "createOptions": {}
+            }
+          },
+          "ICEEdgeDemo": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.ICEEdgeDemo}",
+              "createOptions": {}
+            }
+          },
+          "TemperatureSenson": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.TemperatureSenson}",
+              "createOptions": {}
+            }
+          },
+          "BloodOxygenSensor": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.BloodOxygenSensor}",
+              "createOptions": {}
+            }
+          }
+        }
+      }
+    },
+    "$edgeHub": {
+      "properties.desired": {
+        "schemaVersion": "1.0",
+        "routes": {
+          "BloodSugerSensorToIoTICEEdgeDemo": "FROM /messages/modules/BloodSugerSensor/outputs/* INTO BrokeredEndpoint(\"/modules/ICEEdgeDemo/inputs/input1\")",
+          "BloodPressureSensorToICEEdgeDemo": "FROM /messages/modules/BloodPressureSensor/outputs/* INTO BrokeredEndpoint(\"/modules/ICEEdgeDemo/inputs/input2\")",
+          "TemperatureSensonToICEEdgeDemo": "FROM /messages/modules/TemperatureSenson/outputs/* INTO BrokeredEndpoint(\"/modules/ICEEdgeDemo/inputs/input3\")",
+          "BloodOxygenSensorToICEEdgeDemo": "FROM /messages/modules/BloodOxygenSensor/outputs/* INTO BrokeredEndpoint(\"/modules/ICEEdgeDemo/inputs/input4\")",
+          "ICEEdgeDemoToIoTHub": "FROM /messages/modules/ICEEdgeDemo/outputs/FinalOutput INTO $upstream"
+        },
+        "storeAndForwardConfiguration": {
+          "timeToLiveSecs": 7200
+        }
+      }
+    }
+  }
+}
