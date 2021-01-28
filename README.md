@@ -13,3 +13,7 @@ This application consists of 4 custom AzureIoTEdge modules which are stimulating
 
 These modules were written in simple javascript and using docker containers for linux were executed.
 
+Useful links : 
+https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-develop-for-linux
+
+
